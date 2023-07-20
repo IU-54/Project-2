@@ -1,1 +1,66 @@
+/*
+****Biostatistical Analyst: 
+*Date created:
+*Date last modified:
+*Purpose: The purpose of this program is to run generalized linear mixed model analyses*/
+
+libname _____" " /*this is the pathway to let SAS know where to save permanent datasets. The underscore represents the name of the libname and the pathway to the folder
+  is written within the quotations*/
+
+/*Importing the excel data into SAS*/
+
+proc import datafile="" /*
+out=_____  dbms=xlsx  replace; *dmbs indicates the data type, in this case the file is an excel document; out statement indicates the name 
+           one would like to call this dataset when imported into SAS*;
+sheet="    "; *the name of the excel sheet of interest is written within the quotations*;
+run;
+
+*Overview of imported data- when the code below is run, one is able to see the number of records/observations and variables, and variable format/type*; 
+
+proc contents data=; 
+run;
+
+*Transform the data*; 
+
+data newdataset;
+set ;.
+
+logdiff=log(difference); 
+
+run; 
+
+/*If there is an interaction term, run the generalized linear mixed model first with the interaction term
+and examine the model fit*/
+
+proc glimmix data=;
+class a b ID;
+model logdiff=a b a*b/solution; 
+random ID; 
+lsmeans a /pdiff adjust=tukey cl lines;
+lsmeans b /pdiff adjust=tukey cl lines; 
+estimate "" /cl ; *reports estimates comparing different levels within cohort*;
+ods output lsmeans=;
+run;
+
+/*Run the generalized linear mixed model without interaction term and examine the model fit*/
+
+proc glimmix data=;
+class a b ID;
+model logdiff=a b /solution; 
+random ID; 
+lsmeans a /pdiff adjust=tukey cl lines;
+lsmeans b /pdiff adjust=tukey cl lines; 
+estimate "" /cl ; *reports estimates comparing different levels within cohort*;
+ods output lsmeans=;
+run;
+
+*Check the difference in model fit between the two models to decide which model to run as the final model*; 
+
+data; 
+LRT=; *difference in -2 Res Log Likelihood values between models*;
+df=;
+p_value=1-probchi(LRT, df);
+run; 
+
+
 
