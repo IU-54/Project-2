@@ -10,4 +10,4 @@
   ## 3. Proc means
      c. Reports statistics for continuous characteristics (i.e., mean, std, median, p25, p75)
   ## 4. Proc glimmix
-     d. Reports results from a generalized kinear mixed model,
+     d. Reports results from a generalized linear mixed model,
